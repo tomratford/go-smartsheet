@@ -1,4 +1,4 @@
-module github.com/william20111/go-smartsheet
+module github.com/tomratford/go-smartsheet
 
 go 1.15
 
