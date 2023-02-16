@@ -115,6 +115,20 @@ func (c Client) UpdateSheet(id string, sheet Sheet) (*ResultObject, error) {
 }
 
 // Return ResultObject object
+func (c Client) UpdateRow(id string, row Row) (*ResultObject, error) {
+	var res ResultObject
+	resp, err := c.put(fmt.Sprintf("%s/sheets/%s/rows", apiEndpoint, id), row, nil)
+	if err != nil {
+		return nil, err
+	}
+	if dErr := c.decodeJSON(resp, &res); dErr != nil {
+		return nil, fmt.Errorf("could not decode JSON response: %v", dErr)
+	}
+	res.Result = res.Result.(Sheet)
+	return &res, nil
+}
+
+// Return ResultObject object
 func (c Client) CreateSheet(sheet Sheet) (*ResultObject, error) {
 	var res ResultObject
 	resp, err := c.post(fmt.Sprintf("%s/sheets", apiEndpoint), sheet, nil)
