@@ -70,9 +70,13 @@ func (c Client) AddRow(sheetId int64, rows []Row) (*[]Row, error) {
 }
 
 // Return ResultObject object
-func (c Client) UpdateRow(id string, rows Row) (*ResultObject, error) {
+func (c Client) UpdateRow(id string, row Row) (*ResultObject, error) {
+	row.Rownumber = nil
+	row.CreatedAt = nil
+	row.ModifiedAt = nil
+
 	var res ResultObject
-	resp, err := c.put(fmt.Sprintf("%s/sheets/%s/rows", apiEndpoint, id), rows, nil)
+	resp, err := c.put(fmt.Sprintf("%s/sheets/%s/rows", apiEndpoint, id), row, nil)
 	if err != nil {
 		return nil, err
 	}
