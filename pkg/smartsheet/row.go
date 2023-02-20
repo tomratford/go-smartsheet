@@ -18,8 +18,9 @@ package smartsheet
 
 import (
 	"fmt"
-	"github.com/mitchellh/mapstructure"
 	"time"
+
+	"github.com/mitchellh/mapstructure"
 )
 
 type Row struct {
@@ -41,8 +42,8 @@ type Row struct {
 	LockedForUser     bool         `json:"lockedForUser,omitempty"`     // Indicates whether the row is locked for the requesting user. This attribute may be present in a response, but cannot be specified in a request.
 	ModifiedAt        *time.Time   `json:"modifiedAt,omitempty"`        // Time of last modification
 	ModifiedBy        *User        `json:"modifiedBy,omitempty"`        // User object containing name and email of the last person to modify this row
-	Permalink         string       `json:"permalink,omitempty"`         // URL that represents a direct link to the row in Smartsheet. Only returned if the include query string parameter contains rowPermalink.
-	Rownumber         int64        `json:"rownumber,omitempty"`         // Row int within the sheet (1-based - starts at 1)
+	Permalink         string       `json:"permaLink,omitempty"`         // URL that represents a direct link to the row in Smartsheet. Only returned if the include query string parameter contains rowPermalink.
+	Rownumber         *int64       `json:"rowNumber,omitempty"`         // Row int within the sheet (1-based - starts at 1)
 	Version           int64        `json:"version,omitempty"`           // Sheet version int that is incremented every time a sheet is modified
 	ToTop             bool         `json:"toTop,omitempty"`
 	ToBottom          bool         `json:"toBottom,omitempty"`
@@ -66,4 +67,17 @@ func (c Client) AddRow(sheetId int64, rows []Row) (*[]Row, error) {
 	var result []Row
 	err = mapstructure.Decode(res.Result, &result)
 	return &result, nil
+}
+
+// Return ResultObject object
+func (c Client) UpdateRow(id string, rows Row) (*ResultObject, error) {
+	var res ResultObject
+	resp, err := c.put(fmt.Sprintf("%s/sheets/%s/rows", apiEndpoint, id), rows, nil)
+	if err != nil {
+		return nil, err
+	}
+	if dErr := c.decodeJSON(resp, &res); dErr != nil {
+		return nil, fmt.Errorf("could not decode JSON response: %v", dErr)
+	}
+	return &res, nil
 }
